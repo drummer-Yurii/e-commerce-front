@@ -1,10 +1,32 @@
 <template>
-    <h1>This is the Products Page</h1>
+    <div id="page-wrap">
+        <div class="grid-wrap">
+            <div 
+                v-for="product in products" 
+                class="product-item"
+                :key="product.id"
+            >
+                <img :src="product.imageUrl" />
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-price">$ {{ product.price }}</p>
+                <router-link :to="'/products/' + product.id">
+                    <button>View Details</button>
+                </router-link>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
+import { products } from '../fake-data';
+
 export default {
     name: 'ProductsPage',
+    data() {
+        return {
+            products,
+        };
+    }
 };
 </script>
 
