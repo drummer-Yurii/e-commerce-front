@@ -9,7 +9,7 @@
             <p>Average rating: {{ product.averageRating }}</p>
             <button 
               id="add-to-cart"
-              v-if="!showSuccessMessage"
+              v-if="!itemIsInCart && !showSuccessMessage"
               @click="addToCart"
             >
               Add to Cart
@@ -17,9 +17,16 @@
             <button 
               id="add-to-cart"
               class="green-button"
-              v-if="showSuccessMessage"
+              v-if="!itemIsInCart && showSuccessMessage"
             >
               Successfully added item to cart!
+            </button>
+            <button 
+              id="add-to-cart"
+              class="grey-button"
+              v-if="itemIsInCart"
+            >
+              Item is already in cart!
             </button>
             <h4>Description</h4>
             <p>{{ product.description }}</p>
@@ -40,8 +47,15 @@ export default {
     data() {
         return {
             product: {},
+            cartItems: [],
             showSuccessMessage: false,
         };
+    },
+
+    computed: {
+      itemIsInCart() {
+        return this.cartItems.some(item => item.id === this.product.id);
+      }
     },
 
     methods: {
@@ -56,9 +70,11 @@ export default {
       },
     },
     async created() {
-        const result = await axios.get(`/api/products/${this.$route.params.id}`);
-        const product = result.data;
+        const { data: product } = await axios.get(`/api/products/${this.$route.params.id}`);
         this.product = product;
+
+        const { data: cartItems } = await axios.get('/api/users/12345/cart');
+        this.cartItems = cartItems;
     }
 };
 </script>
@@ -95,5 +111,9 @@ export default {
 
   .green-button {
     background-color: green;
+  }
+
+  .grey-button {
+    background-color: #888;
   }
 </style>
